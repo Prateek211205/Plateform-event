@@ -95,5 +95,5 @@ requestSalesforce.post(options, function(err, httpResponse, body){
 });
 
 
-const port = 400;
+var port = process.env.port || 400;
 app.listen(port, () => console.log(`Example app listening on port ${port}!`));
