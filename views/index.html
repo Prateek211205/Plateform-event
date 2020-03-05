@@ -1,0 +1,70 @@
+<html>
+    <head>
+        
+     <link rel="stylesheet" type="text/css" href="/index.css">
+     <script> 
+         var result =[];
+         window.onload = function(){
+            var urlParams = new URLSearchParams(window.location.search);
+            var xhttp = new XMLHttpRequest();
+            xhttp.onreadystatechange = function() {
+                if (this.readyState == 4 && this.status == 200) {
+                    var result1 = JSON.parse(xhttp.response);
+                    document.getElementById("record").innerHTML = result1.result.CaseNumber;
+                    
+                    result = result1.data;
+                    createStatusBar(result);
+                }
+            };
+            xhttp.open("GET", "/case?id="+urlParams.get('id'), true);
+            xhttp.send();
+         }
+
+         function activeNode(index){
+             var urlParams = new URLSearchParams(window.location.search);
+            var isActive = window.confirm("Are you sure want to change status");
+            if(!isActive){
+                return;
+            }
+            var xhttp = new XMLHttpRequest();
+            xhttp.open('POST', '/case', true);
+            xhttp.setRequestHeader('Content-type', 'application/JSON');
+           
+            xhttp.send(JSON.stringify({status:result[index].label, caseId: urlParams.get('id')}));
+            xhttp.onreadystatechange = function() { 
+                if (this.readyState === XMLHttpRequest.DONE && this.status === 200) {
+                    for(var key in result){
+                        if(key <= index){
+                            result[key].active = true;
+                        }else{
+                            result[key].active = false;
+                        }
+                      }
+                      createStatusBar(result);
+                    }
+             }
+           
+         }
+
+         function createStatusBar( result ){
+            var li = '';
+            for(var key in result){
+                if(result[key].active){
+                    li += '<li onclick="activeNode('+key+')" class="active">'+result[key].label+'</li>';
+                }else{
+                    li += '<li onclick="activeNode('+key+')">'+result[key].label+'</li>';
+                }
+            }
+            document.getElementById("progress").innerHTML = li;
+         }
+     </script>
+        
+    </head>
+    <body>
+        <div class="container">
+            <div>Case Number: <span id="record"></span></div>
+            <ul class="progressbar" id="progress">
+            </ul>
+        </div>
+    </body>
+</html>
