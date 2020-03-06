@@ -11,7 +11,6 @@ store: new MemoryStore({
   checkPeriod: 86400000 // prune expired entries every 24h
 }),
 resave: true, saveUninitialized: true}));
-
 app.engine('html', mustacheExpress());
 app.set('view engine', 'html');
 //bodyParser
@@ -44,56 +43,5 @@ app.get('/', (req, res) => {
     });
     
 });
-
-
-
-app.get('/case', (request, response) => {
-
-    let caseId = request.query.id;
-    if(!caseId){
-        return;
-    }
-    console.log(caseId);
-    let conn = new jsforce.Connection({
-        oauth2 : data,
-        accessToken: request.session.accessToken,
-        instanceUrl: request.session.instanceUrl
-    });
-    var data = [{label:'New', active: false},{label:'Working', active: false},{label:'Escalated', active: false}];
-    conn.sobject("Case").retrieve(caseId, function(err, result) {
-       if(!result){return}
-       for(let item in data){
-            data[item].active = true
-            if(data[item].label == result.Status){
-              break;
-            }
-        }
-        response.send({result,data});
-    });
-});
-
-app.post('/case', (request, response) => {
-  let url =  request.session.instanceUrl+'/services/data/v48.0/sobjects/Case_Demo__e/';
-  const options = {
-    url,
-    json: true,
-    'auth': {
-      'bearer': request.session.accessToken
-    },
-    body: {
-       Case_Id__c: request.body.caseId,
-       Performed_By__c: 'Prateek  Chaturvedi',
-       Status__c : request.body.status
-    }
-};
-requestSalesforce.post(options, function(err, httpResponse, body){
-    response.send(httpResponse.body.success);
-   
-});
-  
-  
-});
-
-
 var port = process.env.port || 400;
 app.listen(port, () => console.log(`Example app listening on port ${port}!`));
