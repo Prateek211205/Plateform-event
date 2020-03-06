@@ -31,7 +31,9 @@ var data = {
 app.use(express.static(__dirname + '/public'));
 
 app.set('views', __dirname+'/views');
+console.log('------hello---');
 app.get('/', (req, res) => {
+     console.log('------hello---');
     var conn = new jsforce.Connection({oauth2:data});
     conn.login('prateek211205@appirio.com','sanu2112061Ilj0KngZrRKFjtZWG7jkGDNL', function(err, userInfo) {
         console.log(err);
