@@ -46,4 +46,5 @@ app.get('/', (req, res) => {
 });
 
 var PORT = process.env.PORT || 5000;
-app.listen(PORT, () => console.log(`Example app listening on port ${port}!`));
+console.log(PORT);
+app.listen(PORT, () => console.log(`Example app listening on port ${PORT}!`));
