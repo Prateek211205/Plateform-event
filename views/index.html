@@ -1,14 +1,25 @@
 <html>
     <head>
         
-     <link rel="stylesheet" type="text/css" href="/index.css">
+    <link rel="stylesheet" type="text/css" href="/index.css">
+  
+    <script type="text/javascript" src="/cometd.js"></script>
+    <script type="text/javascript" src="/jquery-1.5.1.js"></script>
+    <script type="text/javascript" src="/json2.js"></script>
+    <script type="text/javascript" src="/jquery.cometd.js"></script>
+  
      <script> 
          var result =[];
+         var $jq = jQuery.noConflict();
          window.onload = function(){
+            
             var urlParams = new URLSearchParams(window.location.search);
             var xhttp = new XMLHttpRequest();
             xhttp.onreadystatechange = function() {
                 if (this.readyState == 4 && this.status == 200) {
+                    var token = xhttp.getResponseHeader('token');
+                    
+                    initPlateformEvent(token);
                     var result1 = JSON.parse(xhttp.response);
                     document.getElementById("record").innerHTML = result1.result.CaseNumber;
                     
@@ -56,6 +67,16 @@
                 }
             }
             document.getElementById("progress").innerHTML = li;
+         }
+
+         function initPlateformEvent(token){
+            console.log(token);
+            $jq.cometd.init({
+            
+                url: 'https://prateekappirio-dev-ed.my.salesforce.com//cometd/28.0/',
+                requestHeaders: { Authorization: 'OAuth '+token}
+              
+            });
          }
      </script>
         

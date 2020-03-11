@@ -39,6 +39,7 @@ app.get('/', (req, res) => {
         console.log(err);
         req.session.accessToken = conn.accessToken;
         req.session.instanceUrl = conn.instanceUrl;
+       
         res.render('index');
     });
     
@@ -67,6 +68,7 @@ app.get('/case', (request, response) => {
               break;
             }
         }
+        response.setHeader('token', request.session.accessToken);
         response.send({result,data});
     });
 });
@@ -93,6 +95,6 @@ requestSalesforce.post(options, function(err, httpResponse, body){
   
 });
 
-var PORT = process.env.PORT || 5000;
+var PORT = process.env.PORT || 400;
 console.log(PORT);
 app.listen(PORT, () => console.log(`Example app listening on port ${PORT}!`));
