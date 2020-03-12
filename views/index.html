@@ -2,15 +2,12 @@
     <head>
         
     <link rel="stylesheet" type="text/css" href="/index.css">
-  
-    <script type="text/javascript" src="/cometd.js"></script>
-    <script type="text/javascript" src="/jquery-1.5.1.js"></script>
-    <script type="text/javascript" src="/json2.js"></script>
-    <script type="text/javascript" src="/jquery.cometd.js"></script>
-  
+    <script type="text/javascript" 
+        src="http://localhost:400/faye/client.js">
+        </script>
      <script> 
          var result =[];
-         var $jq = jQuery.noConflict();
+       
          window.onload = function(){
             
             var urlParams = new URLSearchParams(window.location.search);
@@ -41,7 +38,7 @@
             xhttp.open('POST', '/case', true);
             xhttp.setRequestHeader('Content-type', 'application/JSON');
            
-            xhttp.send(JSON.stringify({status:result[index].label, caseId: urlParams.get('id')}));
+            xhttp.send(JSON.stringify({status:result[index].label,name: urlParams.get('name'), caseId: urlParams.get('id')}));
             xhttp.onreadystatechange = function() { 
                 if (this.readyState === XMLHttpRequest.DONE && this.status === 200) {
                     for(var key in result){
@@ -69,19 +66,19 @@
             document.getElementById("progress").innerHTML = li;
          }
 
-         function initPlateformEvent(token){
-            console.log(token);
-            $jq.cometd.init({
+        function initPlateformEvent(token){
+        
             
-                url: 'https://peaceful-oasis-53010.herokuapp.com/cometd/28.0/',
-                requestHeaders: { Authorization: 'OAuth '+token}
-              
-            });
-         }
+        
+        }
+         
+            
+         
      </script>
         
     </head>
     <body>
+        <div id="content"></div>
         <div class="container">
             <div>Case Number: <span id="record"></span></div>
             <ul class="progressbar" id="progress">

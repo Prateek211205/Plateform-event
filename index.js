@@ -1,5 +1,8 @@
 const express = require('express');
+const faye = require('faye');
+const http = require('http');
 const app = express();
+var server = http.createServer(app);
 var mustacheExpress = require('mustache-express');
 const session = require('express-session');
 const bodyParser = require('body-parser');
@@ -39,7 +42,7 @@ app.get('/', (req, res) => {
         console.log(err);
         req.session.accessToken = conn.accessToken;
         req.session.instanceUrl = conn.instanceUrl;
-       
+        subscribeToPlatformEvents(conn.instanceUrl, conn.accessToken);
         res.render('index');
     });
     
@@ -48,12 +51,12 @@ app.get('/', (req, res) => {
 
 
 app.get('/case', (request, response) => {
-
+    
+     console.log(request.session.instanceUrl);
     let caseId = request.query.id;
     if(!caseId){
         return;
     }
-    console.log(caseId);
     let conn = new jsforce.Connection({
         oauth2 : data,
         accessToken: request.session.accessToken,
@@ -83,18 +86,27 @@ app.post('/case', (request, response) => {
     },
     body: {
        Case_Id__c: request.body.caseId,
-       Performed_By__c: 'Prateek  Chaturvedi',
+       Performed_By__c: request.body.name ? request.body.name : 'Prateek  Chaturvedi',
        Status__c : request.body.status
     }
 };
 requestSalesforce.post(options, function(err, httpResponse, body){
     response.send(httpResponse.body.success);
-   
 });
   
   
 });
 
+let subscribeToPlatformEvents = (url, token) => {
+  var client = new faye.Client(url + '/cometd/47.0/');
+  client.setHeader('Authorization', 'OAuth ' + token);
+  client.subscribe('/event/Case_Demo__e', function(message) {
+      console.log(message);
+  });
+};
+
+var bayeux = new faye.NodeAdapter({mount: '/faye',timeout: 3});
 var PORT = process.env.PORT || 400;
-console.log(PORT);
-app.listen(PORT, () => console.log(`Example app listening on port ${PORT}!`));
+bayeux.attach(server);
+
+server.listen(PORT, () => console.log(`Example app listening on port ${PORT}!`));
